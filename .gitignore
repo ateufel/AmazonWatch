@@ -1,0 +1,14 @@
+node_modules
+build
+dist
+plugins
+platforms
+www
+logs
+*.log
+.idea
+.c9
+screenshots
+.DS_Store
+.cache
+.next
