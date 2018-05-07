@@ -1,16 +1,47 @@
 const puppeteer = require('puppeteer');
 
 (async() => {
-	const browser = await puppeteer.launch();
-	const page = await browser.newPage();
-	await page.goto('https://www.amazon.de', {waitUntil: 'networkidle2'});
+	try {
+		const browser = await puppeteer.launch();
+		const page = await browser.newPage();
+		await page.goto('https://www.amazon.de', {waitUntil: 'networkidle2'});
 
-	const [response] = await Promise.all([
-		page.waitForNavigation({waitUntil: 'networkidle2'}),
-		page.click('#nav-link-yourAccount'),
-	]);
-	const test = await page.$('#ap_email');
-	console.log(test);
+		console.log('go to login');
 
-	await browser.close();
+		await Promise.all([
+			page.waitForNavigation({waitUntil: 'networkidle2'}),
+			page.click('#nav-link-yourAccount')
+		]);
+
+		console.log('enter userdata and hit enter');
+
+		await page.$eval('#ap_email', el => el.value = 'xxx');
+		await page.$eval('#ap_password', el => el.value = 'xxx');
+
+		await Promise.all([
+			page.waitForNavigation({waitUntil: 'networkidle2'}),
+			page.keyboard.press('Enter')
+		]);
+
+		console.log('open link to preorder item');
+
+		await page.goto('https://www.amazon.de/dp/B079135TGP/', {waitUntil: 'networkidle2'});
+
+		console.log('check for preorder button');
+
+		const notifyButton = await page.$('#oneClickBuyButton');
+
+		if (notifyButton) {
+			//TODO order it!
+			console.log('order it!');
+			await page.click('#oneClickBuyButton', {waitUntil: 'networkidle2'});
+		} else {
+			//TODO repeat after x seconds - without login
+			//page.reload();
+		}
+
+		await browser.close();
+	} catch (err) {
+		console.log(err);
+	}
 })();
