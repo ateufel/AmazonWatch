@@ -15,8 +15,8 @@ const puppeteer = require('puppeteer');
 
 		console.log('enter userdata and hit enter');
 
-		await page.$eval('#ap_email', el => el.value = 'xxx');
-		await page.$eval('#ap_password', el => el.value = 'xxx');
+		await page.$eval('#ap_email', (el, value) => el.value = value, process.env.AW_EMAIL);
+		await page.$eval('#ap_password', (el, value) => el.value = value, process.env.AW_PASSWORD);
 
 		await Promise.all([
 			page.waitForNavigation({waitUntil: 'networkidle2'}),
