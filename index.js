@@ -2,45 +2,45 @@ const puppeteer = require('puppeteer');
 
 (async() => {
 	try {
-		const browser = await puppeteer.launch();
+		const browser = await puppeteer.launch({headless: false});
 		const page = await browser.newPage();
+		await page.setViewport({width: 1920, height: 1080});
+
+		//open amazon
 		await page.goto('https://www.amazon.de', {waitUntil: 'networkidle2'});
 
-		console.log('go to login');
+		//open login page
+		page.click('#nav-link-yourAccount');
+		await page.waitForNavigation();
 
-		await Promise.all([
-			page.waitForNavigation({waitUntil: 'networkidle2'}),
-			page.click('#nav-link-yourAccount')
-		]);
+		//enter user details and login
+		await page.type('#ap_email', process.env.AW_EMAIL);
+		await page.type('#ap_password', process.env.AW_PASSWORD);
+		await page.click('#signInSubmit');
+		await page.waitForNavigation();
 
-		console.log('enter userdata and hit enter');
-
-		await page.$eval('#ap_email', (el, value) => el.value = value, process.env.AW_EMAIL);
-		await page.$eval('#ap_password', (el, value) => el.value = value, process.env.AW_PASSWORD);
-
-		await Promise.all([
-			page.waitForNavigation({waitUntil: 'networkidle2'}),
-			page.keyboard.press('Enter')
-		]);
-
-		console.log('open link to preorder item');
-
+		//open article link
 		await page.goto('https://www.amazon.de/dp/B079135TGP/', {waitUntil: 'networkidle2'});
 
-		console.log('check for preorder button');
+		//activate one click buy
+		const oneClickSignIn = await page.$('#oneClickSignIn');
+		if (oneClickSignIn) {
+			await page.click('#oneClickSignIn', {waitUntil: 'networkidle2'});
+		}
 
-		const notifyButton = await page.$('#oneClickBuyButton');
+		//wait for the one click buy button
+		await page.waitFor(3000);
 
-		if (notifyButton) {
-			//TODO order it!
-			console.log('order it!');
+		const oneClickBuyButton = await page.$('#oneClickBuyButton');
+		if (oneClickBuyButton) {
+			//order it nao!
 			await page.click('#oneClickBuyButton', {waitUntil: 'networkidle2'});
 		} else {
 			//TODO repeat after x seconds - without login
 			//page.reload();
 		}
 
-		await browser.close();
+		//await browser.close();
 	} catch (err) {
 		console.log(err);
 	}
