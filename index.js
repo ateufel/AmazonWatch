@@ -20,7 +20,9 @@ const puppeteer = require('puppeteer');
 		await page.waitForNavigation();
 
 		//open article link
-		await page.goto('https://www.amazon.de/dp/B079135TGP/', {waitUntil: 'networkidle2'});
+		await page.goto('https://www.amazon.de/gp/product/B07BFRLV6X', {waitUntil: 'networkidle2'});
+
+		//TODO from here, loop until the item is bought
 
 		//activate one click buy
 		const oneClickSignIn = await page.$('#oneClickSignIn');
