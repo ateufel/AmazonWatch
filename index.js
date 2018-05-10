@@ -1,10 +1,18 @@
 const puppeteer = require('puppeteer');
 
+if (!process.argv[2]) {
+	console.log('amazon url missing');
+	process.exit(1);
+	return;
+}
+
+const amazonURL = process.argv[2];
+
 (async() => {
 	try {
-		const browser = await puppeteer.launch({headless: false});
+		const browser = await puppeteer.launch({headless: true});
 		const page = await browser.newPage();
-		await page.setViewport({width: 1920, height: 1080});
+		//await page.setViewport({width: 1920, height: 1080});
 
 		//open amazon
 		await page.goto('https://www.amazon.de', {waitUntil: 'networkidle2'});
@@ -20,29 +28,30 @@ const puppeteer = require('puppeteer');
 		await page.waitForNavigation();
 
 		//open article link
-		await page.goto('https://www.amazon.de/gp/product/B07BFRLV6X', {waitUntil: 'networkidle2'});
+		await page.goto(amazonURL, {waitUntil: 'networkidle2'});
 
-		//TODO from here, loop until the item is bought
+		//loop until the item is bought
+		while (true) {
+			//activate one click buy
+			const oneClickSignIn = await page.$('#oneClickSignIn');
+			if (oneClickSignIn) {
+				await page.click('#oneClickSignIn');
+				//wait for the one click buy button
+				await page.waitForSelector('#oneClickBuyButton');
+			}
 
-		//activate one click buy
-		const oneClickSignIn = await page.$('#oneClickSignIn');
-		if (oneClickSignIn) {
-			await page.click('#oneClickSignIn', {waitUntil: 'networkidle2'});
+			const oneClickBuyButton = await page.$('#oneClickBuyButton');
+			if (oneClickBuyButton) {
+				//order it nao!
+				await page.click('#oneClickBuyButton', {waitUntil: 'networkidle2'});
+				await browser.close();
+				break;
+			}
+
+			//wait 5 seconds to repeat
+			await page.waitFor(5000);
+			await page.reload({waitUntil: 'networkidle2'});
 		}
-
-		//wait for the one click buy button
-		await page.waitFor(3000);
-
-		const oneClickBuyButton = await page.$('#oneClickBuyButton');
-		if (oneClickBuyButton) {
-			//order it nao!
-			await page.click('#oneClickBuyButton', {waitUntil: 'networkidle2'});
-		} else {
-			//TODO repeat after x seconds - without login
-			//page.reload();
-		}
-
-		//await browser.close();
 	} catch (err) {
 		console.log(err);
 	}
