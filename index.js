@@ -3,7 +3,11 @@ const puppeteer = require('puppeteer');
 if (!process.argv[2]) {
 	console.log('amazon url missing');
 	process.exit(1);
-	return;
+}
+
+if (!process.env.AW_EMAIL || process.env.AW_PASSWORD) {
+	console.log('user credentials missing');
+	process.exit(1);
 }
 
 const amazonURL = process.argv[2];
