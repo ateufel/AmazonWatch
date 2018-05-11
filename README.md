@@ -1,6 +1,5 @@
 # AmazonWatch
-Watches Amazon articles for availability and orders them
-Needs one click buy option activated.
+Watches Amazon articles for availability and orders them.
 
 ## Usage
 
