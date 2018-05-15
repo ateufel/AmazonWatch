@@ -34,6 +34,8 @@ const amazonURL = process.argv[2];
 		//open article link
 		await page.goto(amazonURL, {waitUntil: 'networkidle2'});
 
+		console.log('starting the loop...');
+
 		//loop until the item is bought
 		while (true) {
 			//activate one click buy
@@ -47,8 +49,10 @@ const amazonURL = process.argv[2];
 			const oneClickBuyButton = await page.$('#oneClickBuyButton');
 			if (oneClickBuyButton) {
 				//order it nao!
+				console.log('ordering it!');
 				await page.click('#oneClickBuyButton', {waitUntil: 'networkidle2'});
 				await browser.close();
+				process.exit(1);
 				break;
 			}
 
