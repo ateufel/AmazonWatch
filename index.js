@@ -5,7 +5,7 @@ if (!process.argv[2]) {
 	process.exit(1);
 }
 
-if (!process.env.AW_EMAIL || process.env.AW_PASSWORD) {
+if (!process.env.AW_EMAIL || !process.env.AW_PASSWORD) {
 	console.log('user credentials missing');
 	process.exit(1);
 }
