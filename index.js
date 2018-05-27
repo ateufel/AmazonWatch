@@ -27,6 +27,8 @@ const amazonURL = process.argv[2];
 
 		//enter user details and login
 		await page.type('#ap_email', process.env.AW_EMAIL);
+		await page.click('#continue');
+		await page.waitForNavigation();
 		await page.type('#ap_password', process.env.AW_PASSWORD);
 		await page.click('#signInSubmit');
 		await page.waitForNavigation();
